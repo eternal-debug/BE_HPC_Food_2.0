@@ -1,4 +1,4 @@
-const Category = require('../models/Category')
+const Category = require('../models/category');
 
 module.exports = {
     createCategory: async (req, res) => {
@@ -20,7 +20,7 @@ module.exports = {
                 { title: { $ne: 'Khác' }},
                 { __v: 0 }
             );
-            res.status(201).json({ categories });
+            res.status(200).json({ categories });
         } catch (error) {
             res.status(500).json({ status: false, message: error.message });
         }
@@ -39,7 +39,7 @@ module.exports = {
             if(moreCategory) {
                 categories.push(moreCategory);
             }
-            res.status(201).json({ categories });
+            res.status(200).json({ categories });
         } catch (error) {
             res.status(500).json({ status: false, message: error.message });
         }

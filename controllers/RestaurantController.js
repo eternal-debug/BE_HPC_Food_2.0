@@ -1,4 +1,4 @@
-const Restaurant = require('../models/Restaurant')
+const Restaurant = require('../models/restaurant');
 
 module.exports = {
     addRestaurant: async (req, res) => {
@@ -12,7 +12,7 @@ module.exports = {
         try {
             const newRestaurant = new Restaurant(req.body);
             await newRestaurant.save();
-            res.status(201).json({ status: true, message: 'Nhà hàng đã được thêm!' });
+            res.status(201).json({ status: true, message: 'Nhà hàng đã được thêm' });
         } catch (error) {
             res.status(500).json({ status: false, message: error.message });
         }
@@ -23,7 +23,7 @@ module.exports = {
         try {
             const restaurant = await Restaurant.findById(id);
             if (!restaurant) {
-                return res.status(404).json({ status: false, message: 'Nhà hàng không tồn tại!' });
+                return res.status(404).json({ status: false, message: 'Nhà hàng không tồn tại' });
             }
             res.status(200).json({ status: true, restaurant });
         } catch (error) {

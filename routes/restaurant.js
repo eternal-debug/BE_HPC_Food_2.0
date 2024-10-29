@@ -1,7 +1,8 @@
 const router = require('express').Router();
-const restaurantController = require('../controllers/RestaurantController');
+const restaurantController = require('../controllers/restaurantController');
+const { verifyTokenAndAuthorization } = require('../middlewares/verifyToken');
 
-router.post('/', restaurantController.addRestaurant);
+router.post('/', verifyTokenAndAuthorization, restaurantController.addRestaurant);
 router.get('/random', restaurantController.getRandomRestaurants);
 router.get('/all', restaurantController.getAllNearByRestaurants);
 router.get('/byId/:id', restaurantController.getRestaurantById);
