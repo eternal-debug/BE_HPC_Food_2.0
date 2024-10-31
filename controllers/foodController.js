@@ -41,17 +41,53 @@ module.exports = {
         }
     },
 
+    getAllFood: async (req, res) => {
+        try {
+            const allFood = await Food.aggregate([
+                { $match: { isAvailable: true } },
+                { $project: { __v: 0 } }
+            ]);
+            if (allFood.length === 0) {
+                return res.status(404).json({ status: false, message: 'Không có món ăn nào khả dụng' });
+            }
+            res.status(200).json( allFood );
+        } catch (error) {
+            res.status(500).json({ status: false, message: error.message });
+        }
+    },
+
+    getAllFoodsSortedByTime: async (req, res) => {
+        try {
+            const allFood = await Food.aggregate([
+                { $match: { isAvailable: true } },
+                { 
+                    $addFields: { 
+                        timeAsNumber: { $toInt: "$time" } 
+                    } 
+                },
+                { $sort: { timeAsNumber: 1 } }, 
+                { $project: { __v: 0, timeAsNumber: 0 } } 
+            ]);
+            if (allFood.length === 0) {
+                return res.status(404).json({ status: false, message: 'Không có món ăn nào khả dụng' });
+            }
+            res.status(200).json(allFood);
+        } catch (error) {
+            res.status(500).json({ status: false, message: error.message });
+        }
+    },
+    
+
     getRandomFood: async (req, res) => {
         try {
             const randomFood = await Food.aggregate([
                 { $match: { isAvailable: true } },
-                { $sample: { size: 5 } },
                 { $project: { __v: 0 } }
             ]);
             if (randomFood.length === 0) {
                 return res.status(404).json({ status: false, message: 'Không có món ăn nào khả dụng' });
             }
-            res.status(200).json({ status: true, foods: randomFood });
+            res.status(200).json( randomFood );
         } catch (error) {
             res.status(500).json({ status: false, message: error.message });
         }
@@ -74,22 +110,24 @@ module.exports = {
             res.status(500).json({ status: false, message: error.message });
         }
     },
-    
+
     getFoodByCategory: async (req, res) => {
-        const category = req.params.category;
+        const { category, code } = req.params;
         try {
             const foods = await Food.aggregate([
                 { $match: { category: category, isAvailable: true } },
                 { $project: { __v: 0 } }
             ]);
             if (foods.length === 0) {
-                return res.status(404).json({ status: false, message: 'Không có món ăn nào khả dụng cho danh mục này' });
+                return res.status(200).json([]);
             }
-            res.status(200).json({ status: true, foods });
+
+            res.status(200).json(foods);
         } catch (error) {
             res.status(500).json({ status: false, message: error.message });
         }
     },
+    
 
     searchFood: async (req, res) => {
         const search = req.params.search;
@@ -108,7 +146,7 @@ module.exports = {
             if (result.length === 0) {
                 return res.status(404).json({ status: false, message: 'Không tìm thấy món ăn nào phù hợp' });
             }
-            res.status(200).json({ status: true, foods: result });
+            res.status(200).json( result );
         } catch (error) {
             res.status(500).json({ status: false, message: error.message });
         }

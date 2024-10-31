@@ -33,7 +33,7 @@ const startServer = async () => {
   app.use('/api/users', UserRoute);
   app.use('/api/category', CategoryRoute);
   app.use('/api/restaurants', RestaurantRoute);
-  app.use('/api/food', FoodRoute);
+  app.use('/api/foods', FoodRoute);
   app.use('/api/rating', RatingRoute);
   app.use('/api/address', AddressRoute);
   app.use('/api/cart', CartRoute);

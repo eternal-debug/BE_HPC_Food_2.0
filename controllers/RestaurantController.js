@@ -25,7 +25,7 @@ module.exports = {
             if (!restaurant) {
                 return res.status(404).json({ status: false, message: 'Nhà hàng không tồn tại' });
             }
-            res.status(200).json({ status: true, restaurant });
+            res.status(200).json( restaurant );
         } catch (error) {
             res.status(500).json({ status: false, message: error.message });
         }
@@ -34,7 +34,7 @@ module.exports = {
     getAllNearByRestaurants: async (req, res) => {
         try {
             const allNearByRestaurants = await Restaurant.find({ isAvailable: true }, { __v: 0 });
-            res.status(200).json({ status: true, restaurants: allNearByRestaurants });
+            res.status(200).json( allNearByRestaurants );
         } catch (error) {
             res.status(500).json({ status: false, message: error.message });
         }
@@ -47,7 +47,7 @@ module.exports = {
                 { $sample: { size: 5 } },
                 { $project: { __v: 0 } }
             ]);
-            res.status(200).json({ status: true, restaurants: randomRestaurants });
+            res.status(200).json( randomRestaurants );
         } catch (error) {
             res.status(500).json({ status: false, message: error.message });
         }
