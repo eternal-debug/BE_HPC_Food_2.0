@@ -105,7 +105,7 @@ module.exports = {
             if (foods.length === 0) {
                 return res.status(404).json({ status: false, message: 'Không có món ăn nào khả dụng cho nhà hàng này' });
             }
-            res.status(200).json({ status: true, foods });
+            res.status(200).json( foods );
         } catch (error) {
             res.status(500).json({ status: false, message: error.message });
         }

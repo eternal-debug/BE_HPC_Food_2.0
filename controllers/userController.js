@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const jwt = require('jsonwebtoken');
 
 module.exports = {
     getUser: async (req, res) => {
@@ -21,12 +22,19 @@ module.exports = {
             if (!user) {
                 return res.status(404).json({ status: false, message: 'Người dùng không tồn tại' });
             }
+
             if (userOtp === user.otp) {
                 user.verification = true;
                 user.otp = 'empty';
                 await user.save();
+                const userToken = jwt.sign({
+                    id: user._id,
+                    userType: user.userType,
+                    email:  user.email,
+                }, process.env.JWT_SECRET, {expiresIn: "30d"});
                 const { password, __v, otp, createdAt, ...others } = user._doc;
-                return res.status(200).json(others);
+                return res.status(200).json({ ...others, userToken });
+
             } else {
                 return res.status(400).json({ status: false, message: 'Sai OTP' });
             }
@@ -49,8 +57,13 @@ module.exports = {
             user.verification = true;
             user.phone = phone;
             await user.save();
+            const userToken = jwt.sign({
+                id: user._id,
+                userType: user.userType,
+                email:  user.email,
+            }, process.env.JWT_SECRET, {expiresIn: "30d"});
             const { password, __v, otp, createdAt, ...others } = user._doc;
-            return res.status(200).json(others);
+            return res.status(200).json({ ...others, userToken });
         } catch (error) {
             return res.status(500).json({ status: false, message: error.message });
         }

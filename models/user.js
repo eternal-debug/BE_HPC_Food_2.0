@@ -4,6 +4,7 @@ const UserSchema = new mongoose.Schema({
     username: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     otp: { type: String, required: true, default: 'empty' },
+    fcm: { type: String, required: true, default: 'empty' },
     password: { type: String, required: true },
     verification: { type: Boolean, default: false },
     phone: { type: String, default: '0987654321' },
