@@ -4,24 +4,36 @@ module.exports = {
     addProductToCart: async (req, res) => {
         try {
             const userId = req.user.id;
-            const { productId, totalPrice, quantity, additives } = req.body;
+            const { productId, totalPrice, quantity, additives, instructions } = req.body;
+    
             if (quantity <= 0) {
                 return res.status(400).json({ status: false, message: "Số lượng không hợp lệ" });
             }
-            const existingProduct = await Cart.findOne({ userId, productId });
+    
+            const existingProducts = await Cart.find({ userId, productId });
+    
+            const existingProduct = existingProducts.find(cartItem => {
+                const cartAdditives = cartItem.additives.sort().join();
+                const requestAdditives = [...new Set(additives)].sort().join();
+                return (
+                    cartAdditives === requestAdditives &&
+                    cartItem.instructions === (instructions || null)
+                );
+            });
+    
             if (existingProduct) {
                 existingProduct.quantity += quantity;
-                existingProduct.totalPrice = (existingProduct.totalPrice / existingProduct.quantity) * existingProduct.quantity + totalPrice * quantity;
-                existingProduct.additives = [...new Set([...existingProduct.additives, ...additives])];
+                existingProduct.totalPrice += totalPrice * quantity;
                 await existingProduct.save();
                 return res.status(200).json({ status: true, count: await Cart.countDocuments({ userId }) });
             } else {
                 const newCartItem = new Cart({
                     userId,
                     productId,
-                    totalPrice: totalPrice * quantity, 
+                    totalPrice: totalPrice * quantity,
                     quantity,
-                    additives: [...new Set(additives)] 
+                    additives: [...new Set(additives)],
+                    instructions: instructions || null
                 });
                 await newCartItem.save();
                 return res.status(201).json({ status: true, count: await Cart.countDocuments({ userId }) });
